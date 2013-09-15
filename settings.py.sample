@@ -1,0 +1,36 @@
+# New Innovations settings (login)
+inst = "institution"
+un   = "username"
+pw   = "password"
+
+url_login = "https://www.new-innov.com/Login/Login.aspx"
+url_home  = "https://www.new-innov.com/Ume/Login/Home.aspx"
+url_evals = "https://www.new-innov.com/Ume/EvaluationReports/EVALRPT_ReportsHost.aspx?Control=MyCompletedEvaluations"
+
+
+# Email settings (to, from, mailserver details)
+#
+# MAIL_UN and MAIL_PW may be left blank, but should be specified if the mailserver requires it
+# TO is an array of email addresses, and can be used to send a text message
+# see https://manual.cs50.net/Sending_Texts/ for more details
+
+MAIL_SERVER = "mailserver.com"
+MAIL_UN     = ""
+MAIL_PW     = ""
+
+FR  = "from email address"
+TO  = ["email1", "1231231234@vtext.com"]
+
+MSG = """\
+From: %(fr)s
+To: %(to)s
+Subject: Evals Updated
+
+%(msg)s
+"""
+
+# Script monitoring settings
+# URL to visit after running (for scipt monitoring)
+# (optional)
+
+URL_MONITORING = ""
