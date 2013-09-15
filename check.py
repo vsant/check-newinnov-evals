@@ -163,6 +163,9 @@ def main(args):
   else:
     f = open(fn, "w+")
     f.write(total_num)
+    if not os.path.exists(fn_evals):
+      f2 = open(fn_evals, "w+")
+      f2.write(resp)
   # Access this URL to 'show' that the script has been run
   try:
     if URL_MONITORING:
