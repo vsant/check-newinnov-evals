@@ -28,6 +28,9 @@ def mail(fr, to, msg, serverURL='', un='', pw=''):
   s.quit()
 
 def email(data):
+  if DRY_RUN:
+    print "DRY RUN: ", data
+    return
   for i in TO:
     mail(FR, i, MSG % { 'fr':FR, 'to':i, 'msg':data}, MAIL_SERVER, MAIL_UN, MAIL_PW)
 
@@ -75,6 +78,8 @@ def main(args):
   resp = opener.open(url_evals).read()
   resp = resp.replace('datagridalternatingitemstyle', 'X')
   resp = resp.replace('datagriditemstyle', 'X')
+  resp = resp.replace('<font color="red">Q</font>', '')
+  resp = re.sub('<input id=".*?" type="checkbox" name=".*?"', '<input id="" type="checkbox" name=""', resp)
 
   m = re.findall('<div class="subtextblue">Count: (.*?)</div>', resp)
   if m:
@@ -86,19 +91,23 @@ def main(args):
     # Check if dl == cache, if not, save new version and email alert
     if cache != total_num:
       f.close()
-      f = open(fn, "w+")
-      f.write(total_num)
-      email(str(cache)+"->"+str(total_num))
+      if not DRY_RUN:
+        f = open(fn, "w+")
+        f.write(total_num)
+      #email(str(cache)+"->"+str(total_num))
       # Diff the evals page, analyze each new eval
       if os.path.exists(fn_evals):
         f2 = open(fn_evals, "r+")
         f2_data = f2.read().strip()
         f2_data = f2_data.replace('datagridalternatingitemstyle', 'X')
         f2_data = f2_data.replace('datagriditemstyle', 'X')
+        f2_data = f2_data.replace('<font color="red">Q</font>', '')
+        f2_data = re.sub('<input id=".*?" type="checkbox" name=".*?"', '<input id="" type="checkbox" name=""', f2_data)
         if f2_data != resp:
           f2.close()
-          f2 = open(fn_evals, "w+")
-          f2.write(resp)
+          if not DRY_RUN:
+            f2 = open(fn_evals, "w+")
+            f2.write(resp)
 
           diff = difflib.ndiff(f2_data.splitlines(), resp.splitlines())
           adds = filter(lambda x: x[0] == '+', list(diff))
@@ -156,11 +165,12 @@ def main(args):
               i[0]            : 'on'
             })
             resp2 = opener.open(url_evals, post_data).read()
-            email(i[1] + ": " + extract_grade(resp2))
+            if extract_grade(resp2) != "Unknown":
+              email(i[1] + ": " + extract_grade(resp2))
       else:
         f2 = open(fn_evals, "w+")
         f2.write(resp)
-  else:
+  elif not DRY_RUN:
     f = open(fn, "w+")
     f.write(total_num)
     if not os.path.exists(fn_evals):
