@@ -178,7 +178,7 @@ def main(args):
       f2.write(resp)
   # Access this URL to 'show' that the script has been run
   try:
-    if URL_MONITORING:
+    if URL_MONITORING and not DRY_RUN:
       urllib2.urlopen(URL_MONITORING).read()
   except:
     pass
