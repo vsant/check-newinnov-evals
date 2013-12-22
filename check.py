@@ -49,7 +49,10 @@ def extract_grade(resp2):
   return grades_arr[grade]
 
 def main(args):
-  page_data = urllib2.urlopen(url_login).read()
+  try:
+    page_data = urllib2.urlopen(url_login).read()
+  except:
+    return -1
   m = re.search('id="__EVENTVALIDATION" value="(.*?)" />', page_data)
   if m:
     event_val = m.group(1)
@@ -60,7 +63,7 @@ def main(args):
   cj = cookielib.CookieJar()
   opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
   login_data = urllib.urlencode({
-    '__EVENTTARGET'     : 'btnLogin',
+    '__EVENTTARGET'     : '',
     '__EVENTARGUMENT'   : '',
     '__VIEWSTATE'       : view_state,
     '__EVENTVALIDATION' : event_val,
@@ -69,6 +72,7 @@ def main(args):
     'txtUsername'       : un,
     'txtUsername_ClientState' : '{"enabled":true,"emptyMessage":"Username","validationText":"' + un + '","valueAsString":"' + un + '"}',
     'txtPassword'       : pw,
+    'btnLoginNew'       : 'Log In',
     'btnLogin_ClientState' : '',
     'btnCancel_ClientState' : '',
     'scrWidth' : '1920',
@@ -84,6 +88,8 @@ def main(args):
   m = re.findall('<div class="subtextblue">Count: (.*?)</div>', resp)
   if m:
     total_num = str(reduce(lambda x,y:int(x)+int(y), m))
+  else:
+    return -1
 
   if os.path.exists(fn):
     f = open(fn, "r+")
